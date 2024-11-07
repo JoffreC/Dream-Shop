@@ -34,7 +34,7 @@ public class AddProductRequest {
                 ", price=" + price +
                 ", inventory=" + inventory +
                 ", description='" + description + '\'' +
-                ", category=" + category +
+                ", category=" + category.getName() +
                 '}';
     }
 
@@ -43,7 +43,7 @@ public class AddProductRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AddProductRequest that = (AddProductRequest) o;
-        return Objects.equals(name, that.name) && Objects.equals(brand, that.brand) && Objects.equals(price, that.price) && Objects.equals(inventory, that.inventory) && Objects.equals(description, that.description) && Objects.equals(category, that.category);
+        return Objects.equals(name, that.name) && Objects.equals(brand, that.brand) && Objects.equals(price, that.price) && Objects.equals(inventory, that.inventory) && Objects.equals(description, that.description) && Objects.equals(category.getName(), that.category.getName());
     }
 
     @Override
