@@ -6,6 +6,7 @@ import com.dailycodework.dream_shops.model.CartItem;
 import com.dailycodework.dream_shops.repository.CartItemRepository;
 import com.dailycodework.dream_shops.repository.CartRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -29,6 +30,7 @@ public class CartService implements ICartService{
         return cartRepository.save(cart);
     }
 
+    @Transactional
     @Override
     public void cleanCart(Long id) {
         Cart cart = getCart(id);
@@ -41,5 +43,10 @@ public class CartService implements ICartService{
     public BigDecimal getTotalPrice(Long id) {
         Cart cart = getCart(id);
         return cart.getTotalAmount();
+    }
+
+    @Override
+    public Cart getCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId);
     }
 }
