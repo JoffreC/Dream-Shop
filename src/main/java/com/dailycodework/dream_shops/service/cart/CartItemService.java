@@ -1,5 +1,6 @@
 package com.dailycodework.dream_shops.service.cart;
 
+import com.dailycodework.dream_shops.exception.ResourceNotFoundException;
 import com.dailycodework.dream_shops.model.Cart;
 import com.dailycodework.dream_shops.model.CartItem;
 import com.dailycodework.dream_shops.model.Product;
@@ -7,6 +8,8 @@ import com.dailycodework.dream_shops.repository.CartItemRepository;
 import com.dailycodework.dream_shops.repository.CartRepository;
 import com.dailycodework.dream_shops.service.product.IProductService;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class CartItemService implements ICartItemService {
@@ -45,11 +48,35 @@ public class CartItemService implements ICartItemService {
 
     @Override
     public void removeItemFromCart(Long cartId, Long productId) {
-
+        Cart cart = cartService.getCart(cartId);
+        CartItem cartItem = getCartItem(cartId, productId);
+        cart.removeCartItem(cartItem);
+        cartRepository.save(cart);
     }
 
     @Override
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
+        Cart cart = cartService.getCart(cartId);
+        cart.getCartItems()
+                .stream()
+                .filter(cartItem -> cartItem.getProduct().getId().equals(productId))
+                .findFirst()
+                .ifPresent(cartItem -> {
+                    cartItem.setQuantity(quantity);
+                    cartItem.setUnitPrice(cartItem.getProduct().getPrice());
+                    cartItem.setTotalPrice();
+                });
+        BigDecimal totalAmount = cart.getTotalAmount();
+        cart.setTotalAmount(totalAmount);
+        cartRepository.save(cart);
+    }
 
+    @Override
+    public CartItem getCartItem(Long cartId, Long productId) {
+        Cart cart = cartService.getCart(cartId);
+        return cart.getCartItems()
+                .stream()
+                .filter(cardItem -> cardItem.getProduct().getId().equals(productId))
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
 }
