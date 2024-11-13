@@ -3,6 +3,8 @@ package com.dailycodework.dream_shops.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.NaturalId;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -10,7 +12,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
     private String firstName;
     private String lastName;
 
@@ -24,8 +26,22 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> order;
 
-    public User(Long userId, String firstName, String lastName, String email, String password, Cart cart, List<Order> order) {
-        this.userId = userId;
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private Collection<Role> roles = new HashSet<>();
+
+    public User(Long id, String firstName, String lastName, String email, String password, Cart cart, List<Order> order) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -36,12 +52,12 @@ public class User {
 
     public User() {}
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long userId) {
+        this.id = userId;
     }
 
     public String getFirstName() {

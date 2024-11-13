@@ -3,12 +3,14 @@ package com.dailycodework.dream_shops.service.cart;
 import com.dailycodework.dream_shops.exception.ResourceNotFoundException;
 import com.dailycodework.dream_shops.model.Cart;
 import com.dailycodework.dream_shops.model.CartItem;
+import com.dailycodework.dream_shops.model.User;
 import com.dailycodework.dream_shops.repository.CartItemRepository;
 import com.dailycodework.dream_shops.repository.CartRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class CartService implements ICartService{
@@ -48,5 +50,15 @@ public class CartService implements ICartService{
     @Override
     public Cart getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
+    }
+
+    @Override
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(()->{
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart)
+                });
     }
 }
